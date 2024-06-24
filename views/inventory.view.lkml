@@ -27,8 +27,26 @@ view: inventory {
 
   dimension_group: last_update {
     type: time
-    timeframes: [raw, time, date, week, month, quarter, year]
+    timeframes: [raw, time, date,hour, week, month, quarter, year]
     sql: ${TABLE}."last_update" ;;
+  }
+
+  parameter: dynamic_last_update_date_selection {
+    type: string
+    allowed_value: {value: "Last Update Month"}
+    allowed_value: {value: "Last Update Date"}
+    allowed_value: {value: "Last Update Hour"}
+  }
+
+  dimension: dynamic_last_update_date_dimension {
+    type: string
+    label_from_parameter: dynamic_last_update_date_selection
+    sql:
+    {% if dynamic_last_update_date_selection._parameter_value == "'Last Update Month'" %} ${last_update_month}
+    {% elsif dynamic_last_update_date_selection._parameter_value == "'Last Update Hour'" %} ${last_update_hour}
+    {% else %} ${last_update_date} {% endif %}
+
+      ;;
   }
 
   dimension: store_id {
